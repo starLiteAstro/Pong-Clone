@@ -5,30 +5,50 @@ const hit_sound = new Audio('/pong_sounds/pong_paddle.ogg');
 const wall_sound = new Audio('/pong_sounds/pong_wall.ogg');
 const score_sound = new Audio('/pong_sounds/pong_score.ogg');
 
+// Camvas dimensions
 const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 
-const BALL_SIZE = 15;
-const BALL_SPEED = 5;
+// Paddle properties
+const PADDLE_WIDTH =  10 ;
+const PADDLE_HEIGHT = 50;
+const PADDLE_MARGIN = 70;
+const PADDLE_SPEED = 5;
+const PADDLE_COLOR = 'white'; 
+const AI_DIFFICULTY = 0.1; // 0 to 1, higher is harder
+ 
+// Ball properties
+const BALL_SIZE = 8;
+const BALL_SPEED = 6;
 
 // User paddle
 const user = {
-  x: 0,
-  y: HEIGHT / 2 - 50,
-  width: 15,
-  height: 100,
-  color: 'white',
+  x: PADDLE_MARGIN,
+  y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+  width: PADDLE_WIDTH,
+  height: PADDLE_HEIGHT,
+  color: PADDLE_COLOR,
   score: 0
 }
 
 // AI paddle
 const com = {
-  x: WIDTH - 15,
-  y: HEIGHT / 2 - 50,
-  width: 15,
-  height: 100,
-  color: 'white',
+  x: WIDTH - PADDLE_MARGIN - PADDLE_WIDTH,
+  y: HEIGHT / 2 - PADDLE_HEIGHT / 2,
+  width: PADDLE_WIDTH,
+  height: PADDLE_HEIGHT,
+  color: PADDLE_COLOR,
   score: 0
+}
+
+// Ball
+const ball = { 
+  x: WIDTH / 2 - BALL_SIZE / 2,
+  y: HEIGHT / 2 - BALL_SIZE / 2,
+  size: BALL_SIZE,
+  velocityX: BALL_SPEED * (Math.random() > 0.5 ? 1 : -1), // Random initial x-direction
+  velocityY: BALL_SPEED * (Math.random() * 2 - 1), // Random initial vertical speed
+  color: 'white',
 }
 
 // Net
@@ -36,16 +56,7 @@ const net = {
   x: WIDTH / 2 - 2,
   y: 0,
   width: 2,
-  height: 10,
-  color: 'white',
-}
-
-// Ball
-const ball = { 
-  x: WIDTH / 2 - BALL_SIZE / 2,
-  y: HEIGHT / 2 - BALL_SIZE / 2,
-  velocityX: BALL_SPEED * (Math.random() > 0.5 ? 1 : -1), // Random initial x-direction
-  velocityY: BALL_SPEED * (Math.random() * 2 - 1), // Random initial vertical speed
+  height: 8,
   color: 'white',
 }
 
@@ -65,7 +76,7 @@ function drawRect(x, y, w, h, color) {
 // Draw text
 function drawText(text, x, y, color, spacing = 50) {
   ctx.fillStyle = color;
-  ctx.font = '30px PongScoreExtended';
+  ctx.font = '20px PongScoreExtended';
   ctx.textAlign = 'center';
   
 
@@ -93,98 +104,92 @@ function render() {
   ctx.clearRect(0, 0, WIDTH, HEIGHT);
   // Draw background
   drawRect(0, 0, WIDTH, HEIGHT, 'black');
-  
+
   // Draw score
   // User score: top center of left half
-  drawText(user.score, WIDTH / 4, HEIGHT / 5, 'white');
+  drawText(user.score, WIDTH / 4, HEIGHT / 6, 'white');
   // AI score: top center of right half
-  drawText(com.score, (WIDTH * 3) / 4, HEIGHT / 5, 'white');
-  
-  drawNet();
-  
+  drawText(com.score, (WIDTH * 3) / 4, HEIGHT / 6, 'white');
+
+  drawNet(); 
+
   // Draw paddles
   drawRect(user.x, user.y, user.width, user.height, user.color);
   drawRect(com.x, com.y, com.width, com.height, com.color);
-  
+
   // Draw ball
-  drawRect(ball.x, ball.y, ball.width, ball.height, ball.color);
+  drawRect(ball.x, ball.y, ball.size, ball.size, ball.color);
 }
 
 // Reset ball to center and randomize direction
 function resetBall() {
-  ball.x = WIDTH / 2 - BALL_SIZE / 2;
-  ball.y = HEIGHT / 2 - BALL_SIZE / 2;
+  ball.x = WIDTH / 2 - ball.size / 2;
+  ball.y = HEIGHT / 2 - ball.size / 2;
   ball.velocityX = BALL_SPEED * (Math.random() > 0.5 ? 1 : -1);
   ball.velocityY = BALL_SPEED * (Math.random() * 2 - 1);
-}
-
-// Controls
-canvas.addEventListener('mousemove', movePaddle);
-function movePaddle(event) {
-  let rect = canvas.getBoundingClientRect();
-  if (user.y > HEIGHT / 2) {
-    user.y = Math.min(event.clientY - rect.top - user.height / 2, HEIGHT - user.height);
-  } else {
-    user.y = Math.max(event.clientY - rect.top - user.height / 2, 0);
-  }
-}
-
-// Collision detection
-function collision(b, p) { 
-  // Ball boundaries (use actual position and size)
-  b.top = b.y;
-  b.bottom = b.y + b.height;
-  b.left = b.x;
-  b.right = b.x + b.width;
-
-  // Paddle boundaries
-  p.top = p.y;
-  p.bottom = p.y + p.height;
-  p.left = p.x;
-  p.right = p.x + p.width;
-
-  return b.right > p.left && b.bottom > p.top && b.left < p.right && b.top < p.bottom;
 }
 
 function update() {
   // Update ball position
   ball.x += ball.velocityX;
   ball.y += ball.velocityY;
-  console.log(ball.x, ball.y); 
+  console.log(ball.x, ball.y);
+  
   // Simple AI to control computer paddle
-  let computerLevel = 0.1;
-  com.y += (ball.y - (com.y + com.height / 2)) * computerLevel;
+  com.y += (ball.y - (com.y + com.height / 2)) * AI_DIFFICULTY;
 
   // Prevent computer paddle from moving out of bounds
-  if (com.y < 0) com.y = 0;
-  if (com.y + com.height > HEIGHT) {
-    com.y = HEIGHT - com.height;
-  }
+  com.y = Math.max(Math.min(com.y, HEIGHT - com.height), 0);
 
   // Ball collision with top and bottom walls
-  if (ball.y + ball.height > HEIGHT || ball.y < 0) {
+  if (ball.y <= 0) {
+    ball.y = 0; // Prevent ball from going out of bounds
+    ball.velocityY = -ball.velocityY; // Reverse y direction
+    // Play wall sound
+    wall_sound.play();
+  }
+  if (ball.y + ball.size >= HEIGHT) {
+    ball.y = HEIGHT - ball.size;
     ball.velocityY = -ball.velocityY; // Reverse y direction
     // Play wall sound
     wall_sound.play();
   }
 
-  // Determine which paddle to check for collision
-  let player = (ball.x < WIDTH / 2) ? user : com;
-  if (collision(ball, player)) {
-    let collidePoint = ball.y - (player.y + player.height / 2);
-    collidePoint = collidePoint / (player.height / 2);
-    let angleRad = collidePoint * Math.PI / 4;
-    
-    let direction = (ball.x < WIDTH / 2) ? 1 : -1;
-    
-    ball.velocityX = direction * Math.cos(angleRad);
-    ball.velocityY = direction * Math.sin(angleRad);
+  // Ball collision with user paddle
+  if (ball.x <= user.x + user.width &&
+      ball.y + ball.size >= user.y &&
+      ball.y <= user.y + user.height
+  ) {
+    ball.x = user.x + user.width; // Prevent ball from getting stuck in paddle
+    ball.velocityX = -ball.velocityX;
+    // Add some "spin" based on where it hit the paddle
+    let collidePoint = (ball.y + ball.size / 2) - (user.y + user.height / 2);
+    collidePoint = collidePoint / (user.height / 2);
+    let angleRad = collidePoint * (5 * Math.PI / 12); // Max 75 degree angle
+    ball.velocityY = BALL_SPEED * Math.sin(angleRad);
     // Play hit sound
     hit_sound.play();
   }
 
+  // Ball collision with computer paddle
+  if (ball.x + ball.size >= com.x &&
+      ball.y + ball.size >= com.y &&
+      ball.y <= com.y + com.height
+  ) {
+    ball.x = com.x - ball.size;
+    ball.velocityX = -ball.velocityX;
+    // Add some "spin" based on where it hit the paddle
+    let collidePoint = (ball.y + ball.size / 2) - (com.y + com.height / 2);
+    collidePoint = collidePoint / (com.height / 2);
+    let angleRad = collidePoint * (5 * Math.PI / 12); // Max 75 degree angle
+    ball.velocityY = BALL_SPEED * Math.sin(angleRad);
+    // Play hit sound
+    hit_sound.play();
+  }
+
+  let player = (ball.x < WIDTH / 2) ? com : user;
   // Update score
-  if (ball.x < 0 || ball.x + ball.width > WIDTH) {
+  if (ball.x < 0 || ball.x + ball.size > WIDTH) {
     player.score++;
     // Play score sound
     score_sound.play();
@@ -192,13 +197,17 @@ function update() {
   }
 }
 
-// Game function
-function Pong() {
-  if (isPaused) return; // Skip update and render if paused
-  update(); // Movements, collision, score, etc.
-  render();
-  requestAnimationFrame(Pong);
-}
+// Controls
+canvas.addEventListener('mousemove', function(event) {
+  // Get mouse position relative to canvas
+  const rect = canvas.getBoundingClientRect();
+  // Center paddle on mouse Y position
+  let mouseY = event.clientY - rect.top;
+  user.y = mouseY - user.height / 2;
+  // Move user paddle, ensuring it stays within bounds
+  if (user.y < 0) user.y = 0;
+  if (user.y + user.height > HEIGHT) user.y = HEIGHT - user.height;
+});
 
 // Pause and resume functionality
 var isPaused = false;
@@ -214,6 +223,14 @@ document.addEventListener('keydown', function(event) {
     }
   }
 });
+
+// Game function
+function Pong() {
+  if (isPaused) return; // Skip update and render if paused
+  update(); // Movements, collision, score, etc.
+  render();
+  requestAnimationFrame(Pong);
+}
 
 // Start game
 Pong();
