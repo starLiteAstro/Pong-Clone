@@ -1,0 +1,54 @@
+@font-face {
+  font-family: 'PongScoreExtended';
+  src: url('/fonts/PongScoreExtended.woff2') format('woff2'),
+       url('/fonts/PongScoreExtended.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+    font-family: 'ArcadeClassic';
+    src: url('/fonts/ArcadeClassic.woff2') format('woff2'),
+        url('/fonts/ArcadeClassic.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+body {
+    background: #181818;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    margin-top: 18px;
+    font-size: 3em;
+    font-family: 'ArcadeClassic', Arial, sans-serif;
+    word-spacing: 10px;
+}
+
+#pong {
+    display: block;
+    margin: 32px auto 0 auto;
+    background: #000000;
+    border: 2px solid #fff;
+    border-radius: 4px;
+    box-shadow: 0 0 10px #000;
+}
+
+a {
+    color: #ffffff;
+}
+
+a:hover {
+    color: #b3d4ff;
+}
+
+footer {
+    margin-top: 20px;
+    font-size: 0.9em;
+}
