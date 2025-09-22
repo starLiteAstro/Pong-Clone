@@ -1,15 +1,15 @@
 @font-face {
   font-family: 'PongScoreExtended';
-  src: url('/assets/fonts/PongScoreExtended.woff2') format('woff2'),
-       url('/assets/fonts/PongScoreExtended.woff') format('woff');
+  src: url('assets/fonts/PongScoreExtended.woff2') format('woff2'),
+       url('assets/fonts/PongScoreExtended.woff') format('woff');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
     font-family: 'ArcadeClassic';
-    src: url('/assets/fonts/ArcadeClassic.woff2') format('woff2'),
-        url('/assets/fonts/ArcadeClassic.woff') format('woff');
+    src: url('assets/fonts/ArcadeClassic.woff2') format('woff2'),
+        url('assets/fonts/ArcadeClassic.woff') format('woff');
     font-weight: normal;
     font-style: normal;
     font-display: swap;

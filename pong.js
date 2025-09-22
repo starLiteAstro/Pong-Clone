@@ -1,9 +1,9 @@
 const canvas = document.getElementById('pong');
 const ctx = canvas.getContext('2d');
 
-const hit_sound = new Audio('/assets/pong_sounds/pong_paddle.ogg');
-const wall_sound = new Audio('/assets/pong_sounds/pong_wall.ogg');
-const score_sound = new Audio('/assets/pong_sounds/pong_score.ogg');
+const hit_sound = new Audio('assets/pong_sounds/pong_paddle.ogg');
+const wall_sound = new Audio('assets/pong_sounds/pong_wall.ogg');
+const score_sound = new Audio('assets/pong_sounds/pong_score.ogg');
 
 // Camvas dimensions
 const WIDTH = canvas.width;
