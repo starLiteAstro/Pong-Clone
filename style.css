@@ -6,15 +6,6 @@
   font-style: normal;
 }
 
-@font-face {
-    font-family: 'ArcadeClassic';
-    src: url('assets/fonts/ArcadeClassic.woff2') format('woff2'),
-        url('assets/fonts/ArcadeClassic.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
 body {
     background: #181818;
     color: #fff;
@@ -22,13 +13,6 @@ body {
     text-align: center;
     margin: 0;
     padding: 0;
-}
-
-h1 {
-    margin-top: 18px;
-    font-size: 3em;
-    font-family: 'ArcadeClassic', Arial, sans-serif;
-    word-spacing: 10px;
 }
 
 #pong {
@@ -50,5 +34,5 @@ a:hover {
 
 footer {
     margin-top: 20px;
-    font-size: 0.9em;
+    font-size: 1em;
 }
