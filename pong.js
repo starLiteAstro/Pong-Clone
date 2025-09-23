@@ -1,6 +1,52 @@
 const canvas = document.getElementById('pong');
 const ctx = canvas.getContext('2d');
 
+// Initial text
+const img = new Image();
+img.src = 'assets/images/click_to_start.png';
+
+// Blink effect
+let visible = true;
+let blinking = true;
+let blinkId; // Store interval ID
+
+setInterval(() => {
+  visible = !visible;
+}, 700);
+
+// Draw initial text
+function blink() {
+  if (!blinking) return; // Stop blinking if game has started
+  // Clear canvas
+  ctx.clearRect(0, 0, WIDTH, HEIGHT);
+
+  // Scale factors
+  let scaleX = WIDTH / img.width;
+  let scaleY = HEIGHT / img.height;
+
+  // Use the smaller scale to preserve aspect ratio
+  let scale = Math.min(scaleX, scaleY);
+
+  // New dimensions
+  let newWidth = img.width * scale;
+  let newHeight = img.height * scale;
+
+  // Center the image on the canvas
+  let x = (WIDTH - newWidth) / 2;
+  let y = (HEIGHT - newHeight) / 2;
+
+  // Draw image if visible
+  if (visible) {
+    ctx.drawImage(img, x, y, newWidth, newHeight);
+  }
+  // Request next frame
+  blinkId = requestAnimationFrame(blink);
+};
+
+// Start blinking when image is loaded
+img.onload = blink;
+
+// Load sounds
 const hit_sound = new Audio('assets/pong_sounds/pong_paddle.ogg');
 const wall_sound = new Audio('assets/pong_sounds/pong_wall.ogg');
 const score_sound = new Audio('assets/pong_sounds/pong_score.ogg');
@@ -77,12 +123,12 @@ function drawRect(x, y, w, h, color) {
 }
 
 // Draw text
-function drawText(text, x, y, color, spacing = 50) {
+function drawText(text, x, y, color, font, size, spacing = 30) {
   ctx.fillStyle = color;
-  ctx.font = '20px PongScoreExtended';
+  ctx.font = `${size}px ${font}`;
   ctx.textAlign = 'center';
-  
 
+  // Split text into characters
   let chars = String(text).split('');
   // Calculate total width
   let totalWidth = 0;
@@ -110,11 +156,12 @@ function render() {
 
   // Draw score
   // User score: top center of left half
-  drawText(user.score, WIDTH / 4, HEIGHT / 6, 'white');
+  drawText(user.score, WIDTH / 4, HEIGHT / 6, 'white', 'PongScoreExtended', 20);
   // AI score: top center of right half
-  drawText(com.score, (WIDTH * 3) / 4, HEIGHT / 6, 'white');
+  drawText(com.score, (WIDTH * 3) / 4, HEIGHT / 6, 'white', 'PongScoreExtended', 20);
 
-  drawNet(); 
+  // Draw net
+  drawNet();
 
   // Draw paddles
   drawRect(user.x, user.y, user.width, user.height, user.color);
@@ -249,9 +296,15 @@ document.addEventListener('keydown', function(event) {
   if (event.code === 'Space') { // Toggle pause on spacebar press
     isPaused = !isPaused;
     if (isPaused) {
+      // Overlay semi-transparent layer
       ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
       ctx.fillRect(0, 0, WIDTH, HEIGHT);
-      drawText('Paused', WIDTH / 2, HEIGHT / 2, 'white', 20);
+      // Load "Paused" image
+      const pauseImg = new Image();
+      pauseImg.src = 'assets/images/paused.png';
+      pauseImg.onload = function() {
+        ctx.drawImage(pauseImg, WIDTH / 2 - pauseImg.width / 2, HEIGHT / 2 - pauseImg.height / 2);
+      }
     } else {
       Pong(); // Resume game loop
     }
@@ -266,6 +319,11 @@ function Pong() {
   requestAnimationFrame(Pong);
 }
 
-// Start game
-resetBall();
-Pong();
+// Click screen to start
+canvas.addEventListener('click', function() {
+  blinking = false; // Stop blinking
+  cancelAnimationFrame(blinkId); // Stop blink animation
+  ctx.clearRect(0, 0, WIDTH, HEIGHT); // Clear canvas
+  resetBall(); // Initial serve
+  Pong();
+}, { once: true }); // Only allow starting once
