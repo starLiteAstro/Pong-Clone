@@ -56,7 +56,7 @@ const WIDTH = canvas.width;
 const HEIGHT = canvas.height;
 
 // Paddle properties
-const PADDLE_WIDTH = 8;
+const PADDLE_WIDTH = 10;
 const PADDLE_HEIGHT = 40;
 const PADDLE_MARGIN = 100;
 const PADDLE_COLOR = 'white';
@@ -66,8 +66,8 @@ const AI_DIFFICULTY = 1.1;
 const AI_TOLERANCE = 5; // How close the ball must be to the paddle center to stop moving
 
 // Ball properties
-const BALL_SIZE = 8;
-const BALL_SPEED = 6;
+const BALL_SIZE = 10;
+const BALL_SPEED = 3;
 
 // User paddle
 const user = {
@@ -104,7 +104,7 @@ const ball = {
 const net = {
   x: WIDTH / 2 - 2,
   y: 0,
-  width: 2,
+  width: 4,
   height: 8,
   color: 'white',
 }
@@ -156,9 +156,9 @@ function render() {
 
   // Draw score
   // User score: top center of left half
-  drawText(user.score, WIDTH / 4, HEIGHT / 6, 'white', 'PongScoreExtended', 20);
+  drawText(user.score, WIDTH / 4, HEIGHT / 6, 'white', 'PongScoreExtended', 25);
   // AI score: top center of right half
-  drawText(com.score, (WIDTH * 3) / 4, HEIGHT / 6, 'white', 'PongScoreExtended', 20);
+  drawText(com.score, (WIDTH * 3) / 4, HEIGHT / 6, 'white', 'PongScoreExtended', 25);
 
   // Draw net
   drawNet();
